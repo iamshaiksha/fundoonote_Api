@@ -9,7 +9,7 @@ import java.util.Optional;
 import com.bridgelabz.fundoonotes.model.NoteInformation;
 
 /**
- * @author user
+ * @author Shaik shaiksha vali
  *
  */
 public interface ServiceCollaborator {
