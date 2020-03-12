@@ -16,11 +16,5 @@ import lombok.Setter;
 @Setter
 /*Dto class for LabelData*/
 public class LabelDto {
-
 	private String name;
-
-	
-
-	
-	
 }
