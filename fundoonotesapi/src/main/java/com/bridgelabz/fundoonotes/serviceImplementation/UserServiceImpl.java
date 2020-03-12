@@ -194,7 +194,7 @@ public class UserServiceImpl implements UserService {
 		return users;
 	}
 
-	/* Method to get the single userInformation */
+	/* Method to get the single userInformation  */
 	@Transactional
 	@Override
 	public UserInformation getSingleUser(String token) {
