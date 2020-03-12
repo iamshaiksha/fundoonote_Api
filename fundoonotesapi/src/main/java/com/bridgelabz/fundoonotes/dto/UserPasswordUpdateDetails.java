@@ -15,10 +15,4 @@ import lombok.ToString;
 @ToString
 public class UserPasswordUpdateDetails {
 	String newPassword;
-	
-	
-	
-
-	
-
 }
