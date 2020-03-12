@@ -17,7 +17,13 @@ import com.bridgelabz.fundoonotes.model.NoteInformation;
  */
 
 public interface LabelService {
-
+	
+	/**
+	 * Used to create label
+	 * @param labelDto
+	 * @param token
+	 * @return LabelInformation
+	 */
 	LabelInformation createLabel(LabelDto labelDto, String token);
 
 	List<LabelInformation> getAllLabels();
