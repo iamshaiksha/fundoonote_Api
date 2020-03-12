@@ -3,8 +3,6 @@ package com.bridgelabz.fundoonotes.model;
  * @author shaik shaiksha vali
  * 
  * */
-
-
 import java.time.LocalDateTime;
 import java.util.List;
 
