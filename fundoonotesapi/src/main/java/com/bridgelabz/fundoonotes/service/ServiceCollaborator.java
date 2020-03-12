@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package com.bridgelabz.fundoonotes.service;
 
 import java.util.List;
