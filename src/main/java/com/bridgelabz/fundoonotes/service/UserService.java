@@ -9,20 +9,59 @@ import com.bridgelabz.fundoonotes.model.UserInformation;
 
 
 public interface UserService {
+	/**
+	 * 
+	 * @param information
+	 * @return
+	 * @throws Exception
+	 */
 	Boolean register(UserRegistrationDetails information) throws Exception;
 
+	/**
+	 * 
+	 * @param information
+	 * @return UserInformatio
+	 */
 	UserInformation login(UserLoginDetails information);
-
+	/**
+	 * 
+	 * @param token
+	 * @return Boolean
+	 */
 	Boolean verify(String token);
 
+	/**
+	 * 
+	 * @param userUpdate
+	 * @param token
+	 * @return UserInformation
+	 */
+
 	UserInformation forgetPassword(UserPasswordUpdateDetails userUpdate, String token);
+	/**
+	 * 
+	 * @return Boolean
+	 */
 
-//	Boolean update(UserPasswordUpdateDetails information, String token);
+	//	Boolean update(UserPasswordUpdateDetails information, String token);
 
+	/**
+	 * 
+	 * @return List<UserInformation>
+	 */
 	List<UserInformation> getUsers();
-
+	/**
+	 * 
+	 * @param token
+	 * @return
+	 * @throws Exception
+	 */
 	UserInformation getSingleUser(String token) throws Exception;
-
+	/**
+	 * 
+	 * @param emailId
+	 * 
+	 */
 	String emailVerify(String emailId);
 
 }
