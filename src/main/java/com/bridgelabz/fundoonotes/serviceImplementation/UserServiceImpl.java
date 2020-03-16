@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -51,7 +52,8 @@ public class UserServiceImpl implements UserService {
 	private JavaMailSenderImpl mailSenderImplementation;
 	@Autowired
 	private Environment environment;
-	
+	@Autowired
+	RabbitMQSender rabbitMQSender;	
 
 
 
@@ -67,6 +69,7 @@ public class UserServiceImpl implements UserService {
 			userInformation.setPassword(epassword);
 			userInformation.setIsVerified(0);
 			repository.save(userInformation);
+			rabbitMQSender.send(userInformation);
 			this.mailSenderService();
 			MailServiceProvider.sendMail(userInformation,mailSenderImplementation,generate.jwtToken(userInformation.getUserId()));
 			
@@ -197,7 +200,9 @@ public class UserServiceImpl implements UserService {
 	/* Method to get the single userInformation  */
 	@Transactional
 	@Override
-	public UserInformation getSingleUser(String token) {
+	@Cacheable(value="twenty-second-cache", key = "'tokenInCache'+#token", 
+    condition = "#isCacheable != null && #isCacheable")
+	public UserInformation getSingleUser(String token,boolean cacheable) {
 		try {
 			Long id = (Long) generate.parseJWT(token);
 
