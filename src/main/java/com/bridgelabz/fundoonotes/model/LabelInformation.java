@@ -25,7 +25,8 @@ public class LabelInformation {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long labelId;
-	private String name; 
+	private String name;
+	
 	
 	
 //	@ManyToMany(mappedBy="labelList",fetch=FetchType.EAGER,cascade=CascadeType.PERSIST)
