@@ -25,5 +25,7 @@ public interface UserDao extends CrudRepository<UserInformation, Long>{
 	List<UserInformation> getUsers();
 	@Query(value=" update user_information set is_verified=true where user_id=?",nativeQuery=true)
 	boolean verify(Long id);
+	@Query(value=" select * from user_information where name=?",nativeQuery=true)
+	List<UserInformation> findByName(String text);
 
 }
