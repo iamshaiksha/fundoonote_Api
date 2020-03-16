@@ -3,18 +3,23 @@
  */
 package com.bridgelabz.fundoonotes.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * @author shaik shaiksha vali
  *
  */
 @Data
-@Getter
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 /*Dto class for LabelData*/
 public class LabelDto {
 	private String name;
+
+	
+	
 }
