@@ -22,5 +22,7 @@ import lombok.ToString;
 public class LabelUpdate {
 
 	private Long labelId;
-	private String name;	
+	private String name;
+	
+	
 }

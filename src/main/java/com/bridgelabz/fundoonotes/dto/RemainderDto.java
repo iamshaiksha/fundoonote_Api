@@ -19,13 +19,6 @@ import lombok.ToString;
 @ToString
 public class RemainderDto {
 
-	public LocalDateTime getRemainder() {
-		return remainder;
-	}
-
-	public void setRemainder(LocalDateTime remainder) {
-		this.remainder = remainder;
-	}
 
 	private LocalDateTime remainder;
 

@@ -25,6 +25,9 @@ import com.bridgelabz.fundoonotes.dto.UserLoginDetails;
 import com.bridgelabz.fundoonotes.dto.UserPasswordUpdateDetails;
 import com.bridgelabz.fundoonotes.dto.UserRegistrationDetails;
 import com.bridgelabz.fundoonotes.model.UserInformation;
+import com.bridgelabz.fundoonotes.model.UserInformationSearch;
+import com.bridgelabz.fundoonotes.repository.UserDao;
+import com.bridgelabz.fundoonotes.repository.UserDaoSearch;
 import com.bridgelabz.fundoonotes.response.UserResponse;
 import com.bridgelabz.fundoonotes.service.UserService;
 import com.bridgelabz.fundoonotes.util.JwtGenerator;
@@ -32,12 +35,13 @@ import com.bridgelabz.fundoonotes.util.JwtGenerator;
 @RestController
 @PropertySource("classpath:Message.properties")
 public class UserController {
-
+	
 	private UserService userService;
 
 	private JwtGenerator jwtGenerator;
 	@Autowired
 	private Environment environment;
+
 
 	@Autowired
 	public UserController(UserService iUserService, JwtGenerator iJwtGenerator) {
@@ -81,7 +85,7 @@ public class UserController {
 	/**
 	 * 
 	 * @param emailId
-	 * @return
+	 * @return token
 	 */
 	@PostMapping(value = "forgetPassword/tokenGenerate/{emailId}")
 	public ResponseEntity<UserResponse> emailVerify(@PathVariable String emailId) {
@@ -141,7 +145,7 @@ public class UserController {
 	//	}
 	/**
 	 * 
-	 * @return
+	 * @return List<UserInformation>
 	 */
 
 	/* API for retrieving the all the user information */
@@ -159,9 +163,10 @@ public class UserController {
 
 	/* API to get the single user information */
 	@GetMapping("user/singleUser")
-	public ResponseEntity<UserResponse> singleUser(@RequestHeader("token") String token) throws Exception {
-		UserInformation user = userService.getSingleUser(token);
+	public ResponseEntity<UserResponse> singleUser(@RequestHeader("token") String token, boolean cacheable) throws Exception {
+		UserInformation user = userService.getSingleUser(token,cacheable);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(new UserResponse(environment.getProperty("202"), 202, user));
 	}
+	
 
 }
