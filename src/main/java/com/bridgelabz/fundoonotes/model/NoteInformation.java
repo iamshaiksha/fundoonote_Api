@@ -54,9 +54,5 @@ public class NoteInformation {
 	@JoinTable(name = "note_labels",joinColumns = {@JoinColumn(name = "labelId")},inverseJoinColumns = {@JoinColumn(name = "noteId")})
 	@ManyToMany(fetch=FetchType.EAGER,cascade=CascadeType.PERSIST)
 	private List<LabelInformation> labelList;
-
-	
-	
-	
 		
 }
