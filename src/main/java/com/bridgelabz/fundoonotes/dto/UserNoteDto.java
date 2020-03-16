@@ -16,5 +16,6 @@ public class UserNoteDto {
 	@NotNull
 	private String title;
 	@NotNull
-	private String description;	
+	private String description;
+	
 }

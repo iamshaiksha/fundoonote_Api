@@ -14,5 +14,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class UserPasswordUpdateDetails {
-	String newPassword;
+	private String newPassword;
+
+	
 }
