@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
 			userInformation.setPassword(epassword);
 			userInformation.setIsVerified(0);
 			repository.save(userInformation);
-			rabbitMQSender.send(userInformation);
+//			rabbitMQSender.send(userInformation);
 			this.mailSenderService();
 			MailServiceProvider.sendMail(userInformation,mailSenderImplementation,generate.jwtToken(userInformation.getUserId()));
 			

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bridgelabz.fundoonotes.dto.RemainderDto;
 import com.bridgelabz.fundoonotes.dto.UpdateNote;
 import com.bridgelabz.fundoonotes.dto.UserNoteDto;
+import com.bridgelabz.fundoonotes.model.LabelInformation;
 import com.bridgelabz.fundoonotes.model.NoteInformation;
 import com.bridgelabz.fundoonotes.response.UserResponse;
 import com.bridgelabz.fundoonotes.service.NoteService;
@@ -212,6 +213,18 @@ public class NoteController {
 		     NoteInformation noteInformation= noteService.removeRemainder(noteId, token);
 		return ResponseEntity.status(HttpStatus.OK).body(new UserResponse("Reminder notes Removed",200,noteInformation));
 	}
+	/**
+	 * 
+	 * @param noteId
+	 * @param token
+	 * @return List<LabelInformation>
+	 */
+	@GetMapping("/getlabel")
+	public List<LabelInformation> getLabel(@RequestParam Long noteId, @RequestHeader String token) {
+		List<LabelInformation> listLabel = noteService.getLabelsFromNote(noteId, token);
+		return listLabel;
+	}	
+	
 	
 	@GetMapping(value = "/notes/ascendingSortByTitle")
 	public ResponseEntity<UserResponse> SortByNoteTitle() {
