@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -23,6 +24,7 @@ import com.bridgelabz.fundoonotes.dto.UpdateNote;
 import com.bridgelabz.fundoonotes.dto.UserNoteDto;
 import com.bridgelabz.fundoonotes.exception.NoteException;
 import com.bridgelabz.fundoonotes.exception.UserException;
+import com.bridgelabz.fundoonotes.model.LabelInformation;
 import com.bridgelabz.fundoonotes.model.NoteInformation;
 import com.bridgelabz.fundoonotes.model.UserInformation;
 import com.bridgelabz.fundoonotes.repository.UserDao;
@@ -46,40 +48,34 @@ public class NoteServiceImplementation implements NoteService{
 	private UserNoteRepository userNoteRepository;
 	@Autowired
 	private UserDao userDao;
-//	@Autowired
-//	private ModelMapper modelMapper;
+	//	@Autowired
+	//	private ModelMapper modelMapper;
 	NoteInformation noteInformation=new NoteInformation();
 
 	@Transactional
 	@Override
 	public NoteInformation create(UserNoteDto userNoteDto, String token) {
-		try
-		{
-			Long id=(Long)generate.parseJWT(token);
-			System.out.println("id="+id);
-			UserInformation user=userDao.findUserById(id);
-			if(user!=null)
-			{
-				//NoteInformation noteInformation=modelMapper.map(userNoteDto,NoteInformation.class);
-				BeanUtils.copyProperties(userNoteDto,noteInformation);
-				noteInformation.setCreateDateTime(LocalDateTime.now());
-				noteInformation.setIsArchieved(0);
-				noteInformation.setColor("white");
-				noteInformation.setIsPinned(0);
-				noteInformation.setIsTrashed(0);
-				noteInformation.setReminder(null);
-				noteInformation.setUpDateTime(null);
-				noteInformation.setDescription(userNoteDto.getDescription());
-				noteInformation.setTitle(userNoteDto.getTitle());
-				user.getNote().add(noteInformation);
-				return userNoteRepository.save(noteInformation);
-			}
-		}
-		catch(Exception e)
-		{
-			throw new UserException(HttpStatus.BAD_GATEWAY,environment.getProperty("400"));
-		}
-		return noteInformation;
+
+		Long id=(Long)generate.parseJWT(token);
+		System.out.println("id="+id);
+		UserInformation user=userDao.findUserById(id);
+		Optional<UserInformation> optionalUser=userDao.findById(id);
+		return optionalUser.filter(userInfo->userInfo!=null).filter(note->{
+			return userNoteDto.getTitle()!=null&& userNoteDto.getTitle()!=null;})
+				.map(userInfo->{
+					BeanUtils.copyProperties(userNoteDto,noteInformation);
+					noteInformation.setCreateDateTime(LocalDateTime.now());
+					noteInformation.setIsArchieved(0);
+					noteInformation.setColor("white");
+					noteInformation.setIsPinned(0);
+					noteInformation.setIsTrashed(0);
+					noteInformation.setReminder(null);
+					noteInformation.setUpDateTime(LocalDateTime.now());
+					noteInformation.setDescription(userNoteDto.getDescription());
+					noteInformation.setTitle(userNoteDto.getTitle());
+					user.getNote().add(noteInformation);
+					return userNoteRepository.save(noteInformation);
+				}).orElseThrow(()->new UserException(HttpStatus.BAD_REQUEST,environment.getProperty("404")));
 	}
 
 	@Transactional
@@ -103,39 +99,24 @@ public class NoteServiceImplementation implements NoteService{
 	public List<NoteInformation> updateNote(UpdateNote updateNoteDto, String token) {
 
 		List<NoteInformation> list=new ArrayList<>();
-		try
-		{
-			Long id=generate.parseJWT(token);
-			userInformation=userDao.findUserById(id);
-			Optional<NoteInformation> noteInformation= userNoteRepository.findById(updateNoteDto.getId());
 
-			if(noteInformation!=null)
-			{
-				noteInformation.ifPresent(notes->{
-
-					notes.setNoteId(updateNoteDto.getId());
-					notes.setTitle(updateNoteDto.getTitle());
-					notes.setDescription(updateNoteDto.getDescription());
-					notes.setIsArchieved(updateNoteDto.getIsArchieved());
-					notes.setIsPinned(updateNoteDto.getIsPinned());
-					notes.setIsTrashed(updateNoteDto.getIsTrashed());
-					notes.setUpDateTime(LocalDateTime.now());
-					//notes.setUserInformation(userInformation);
-					//notes.getUserInformation();
-					userNoteRepository.save(notes);
-
-
-				}		
-						);
-			}
-
-		}catch (Exception e) {
-			throw new UserException(HttpStatus.BAD_GATEWAY,environment.getProperty("502"));
-
-		}
-
+		Long id=generate.parseJWT(token);
+		userInformation=userDao.findUserById(id);
+		Optional<NoteInformation> noteInformation= userNoteRepository.findById(updateNoteDto.getId());
+		return noteInformation.filter(note -> {
+			return note != null;
+		}).map(note->{note.setNoteId(updateNoteDto.getId());
+		note.setTitle(updateNoteDto.getTitle());
+		note.setDescription(updateNoteDto.getDescription());
+		note.setIsArchieved(updateNoteDto.getIsArchieved());
+		note.setIsPinned(updateNoteDto.getIsPinned());
+		note.setIsTrashed(updateNoteDto.getIsTrashed());
+		note.setUpDateTime(LocalDateTime.now());
+		userNoteRepository.save(note);
 		return list;
+		}).orElseThrow(()->new UserException(HttpStatus.BAD_REQUEST,environment.getProperty("404")));
 	}
+
 	@Transactional
 	@Override
 	public void deleteNote(Long id, String token) {
@@ -145,8 +126,9 @@ public class NoteServiceImplementation implements NoteService{
 			userInformation=userDao.findUserById(userId);
 			noteInformation = userNoteRepository.findNoteById(userId);
 			if(noteInformation!=null)
-			{
-				noteInformation.setIsTrashed(0);
+			{	
+				userNoteRepository.delete(noteInformation);
+//				noteInformation.setIsTrashed(0);
 				userNoteRepository.save(noteInformation);
 			}
 		}catch(Exception e)
@@ -157,28 +139,27 @@ public class NoteServiceImplementation implements NoteService{
 	}
 	@Transactional
 	@Override
-	public void addColour(Long noteId, String colour) {
+	public String addColour(Long noteId, String colour) {
 
-		try {
-			Optional<NoteInformation> noteInformation = userNoteRepository.findById(noteId);
-			if (noteInformation != null) 
-				noteInformation.ifPresent(notes->{
-					notes.setColor("cyan");
-					userNoteRepository.save(notes);
-				});
-
-		} catch (Exception e) {
-			throw new UserException(HttpStatus.BAD_GATEWAY,environment.getProperty("502"));
-		}
+		
+			Optional<NoteInformation> optionalNote = userNoteRepository.findById(noteId);
+			return optionalNote.filter(note->{return note!=null;}).
+			map(note->{
+			note.setColor("cyan");
+			note.setUpDateTime(LocalDateTime.now());
+			userNoteRepository.save(note);
+			return environment.getProperty("201");
+			}).orElseThrow(()->new UserException(HttpStatus.BAD_REQUEST,environment.getProperty("404")));
+		 
 	}
 	@Transactional
 	@Override
 	public List<NoteInformation> getNoteByUserId(String token) {
-		
+
 		Long id =  generate.parseJWT(token);
-		
+
 		try {
-			 List<NoteInformation> user = userNoteRepository.findNoteByUserId(id);
+			List<NoteInformation> user = userNoteRepository.findNoteByUserId(id);
 			if (user != null) {
 				return user;
 			}
@@ -187,7 +168,7 @@ public class NoteServiceImplementation implements NoteService{
 		}
 		return null;
 	}
-	
+
 	@Override
 	public NoteInformation pinned(Long noteId, String token) {
 		Long id=generate.parseJWT(token);
@@ -196,7 +177,7 @@ public class NoteServiceImplementation implements NoteService{
 			if (noteList!= null) {
 				NoteInformation data =noteList.stream().filter(note->note.getNoteId()==noteId).findFirst().orElseThrow(()->new NoteException(HttpStatus.BAD_REQUEST,"Note not exist on the user"));
 				data.setIsPinned(1);
-				data.setIsArchieved(0);
+				data.setIsArchieved(1);
 				data.setUpDateTime(LocalDateTime.now());
 				return userNoteRepository.save(data);
 
@@ -218,12 +199,12 @@ public class NoteServiceImplementation implements NoteService{
 		try {
 			NoteInformation data = noteList.stream().filter(t -> t.getNoteId() == noteId).findFirst()
 					.orElseThrow(()->new NoteException(HttpStatus.BAD_REQUEST,environment.getProperty("400")));
-			
+
 			data.setIsPinned(0);
 			data.setIsArchieved(1);
 			data.setUpDateTime(LocalDateTime.now());
 			return userNoteRepository.save(data);
-			
+
 		} catch (Exception ae) {
 			throw new NoteException(HttpStatus.INTERNAL_SERVER_ERROR,environment.getProperty("500"));
 		}
@@ -234,13 +215,13 @@ public class NoteServiceImplementation implements NoteService{
 
 		Long id=generate.parseJWT(token);
 		List<NoteInformation> noteList = userNoteRepository.findNoteByUserId(id);
-		
+
 		try {
 			if (noteList != null) {
 				NoteInformation noteData = noteList.stream().filter(t -> t.getNoteId() == noteId).findFirst()
 						.orElseThrow(()->new NoteException(HttpStatus.BAD_REQUEST,environment.getProperty("400")));
-					noteData.setReminder(remainder.getRemainder());
-					return userNoteRepository.save(noteData);
+				noteData.setReminder(remainder.getRemainder());
+				return userNoteRepository.save(noteData);
 			}
 		} catch (Exception ae) {
 			throw new NoteException(HttpStatus.INTERNAL_SERVER_ERROR,environment.getProperty("500"));
@@ -250,16 +231,16 @@ public class NoteServiceImplementation implements NoteService{
 	}
 	@Override
 	public NoteInformation removeRemainder(Long noteId, String token) {
-		
+
 		Long id=generate.parseJWT(token);
 		List<NoteInformation> noteList = userNoteRepository.findNoteByUserId(id);
 		try {
 			if (noteList != null) {
 				NoteInformation noteData = noteList.stream().filter(t -> t.getNoteId() == noteId).findFirst()
 						.orElseThrow(()->new NoteException(HttpStatus.BAD_REQUEST,environment.getProperty("400")));
-					noteData.setReminder(null);
-					return userNoteRepository.save(noteData);
-			
+				noteData.setReminder(null);
+				return userNoteRepository.save(noteData);
+
 			}
 		} catch (Exception ae) {
 			throw new NoteException(HttpStatus.INTERNAL_SERVER_ERROR,environment.getProperty("500"));
@@ -285,7 +266,7 @@ public class NoteServiceImplementation implements NoteService{
 			throw new NoteException(HttpStatus.INTERNAL_SERVER_ERROR,environment.getProperty("500"));
 		}
 
-		
+
 	}
 	@Transactional
 	@Override
@@ -315,12 +296,12 @@ public class NoteServiceImplementation implements NoteService{
 		Notelist.forEach(t -> {
 			noteTitles.add(t.getTitle());
 		});
-//		for (NoteInformation noteInformation : Notelist) {
-//			noteTitles.add(noteInformation.getTitle());
-//		}
+		//		for (NoteInformation noteInformation : Notelist) {
+		//			noteTitles.add(noteInformation.getTitle());
+		//		}
 		Collections.sort(noteTitles);
 		return noteTitles;
-		
+
 	}
 	@Transactional
 	@Override
@@ -330,11 +311,24 @@ public class NoteServiceImplementation implements NoteService{
 		Notelist.forEach(t -> {
 			noteTitles.add(t.getTitle());
 		});
-//		for (NoteInformation noteInformation : Notelist) {
-//			noteTitles.add(noteInformation.getTitle());
-//		}
+		//		for (NoteInformation noteInformation : Notelist) {
+		//			noteTitles.add(noteInformation.getTitle());
+		//		}
 		Collections.sort(noteTitles,Collections.reverseOrder());
 		return noteTitles;
+	}
+	@Transactional
+	@Override
+	public List<LabelInformation> getLabelsFromNote(Long noteId, String token) {
+		// TODO Auto-generated method stub
+		long id =  generate.parseJWT(token);		
+		NoteInformation note = userNoteRepository.findNoteById(id);
+		if (note.getLabelList() != null) {
+			List<LabelInformation> labels = note.getLabelList().stream().collect(Collectors.toList());
+			return labels;
+		} else {
+			return null;
+		}
 	}
 }
 

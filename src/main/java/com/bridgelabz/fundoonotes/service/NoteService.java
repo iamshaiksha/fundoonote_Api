@@ -6,6 +6,7 @@ import java.util.List;
 import com.bridgelabz.fundoonotes.dto.RemainderDto;
 import com.bridgelabz.fundoonotes.dto.UpdateNote;
 import com.bridgelabz.fundoonotes.dto.UserNoteDto;
+import com.bridgelabz.fundoonotes.model.LabelInformation;
 import com.bridgelabz.fundoonotes.model.NoteInformation;
 
 /**
@@ -49,8 +50,9 @@ void deleteNote(Long id, String token);
  * 
  * @param noteId
  * @param colour
+ * @return 
  */
-void addColour(Long noteId, String colour);
+String addColour(Long noteId, String colour);
 /**
  * 
  * @param token
@@ -109,6 +111,13 @@ List<String> ascSortByName();
  * @return List<String>
  */
 List<String> descsortByName();
+/**
+ * 
+ * @param noteId
+ * @param token
+ * @return List<LabelInformation>
+ */
+List<LabelInformation> getLabelsFromNote(Long noteId, String token);
 	
 	
 }
