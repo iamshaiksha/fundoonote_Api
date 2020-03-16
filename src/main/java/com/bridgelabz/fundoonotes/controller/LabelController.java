@@ -43,7 +43,7 @@ public class LabelController {
 	 * 
 	 * @param labelDto
 	 * @param token
-	 * @return
+	 * @return LabelInformation
 	 */
 	@PostMapping("/label/notes/{token}")
 	public ResponseEntity<UserResponse> createLabel(@RequestBody LabelDto labelDto,@RequestHeader("token") String token)
@@ -60,7 +60,7 @@ public class LabelController {
 	}
 	/**
 	 * 
-	 * @return
+	 * @return List<LabelInformation>
 	 */
 	/*Api for  Fetching AllLabels */
 	@GetMapping("label/getAllLabels")
@@ -73,7 +73,7 @@ public class LabelController {
 	/**
 	 * 
 	 * @param id
-	 * @return
+	 * @return LabelInformation
 	 */
 	/*Api for getting a Label */
 	@GetMapping("label/getLabel/{id}")
@@ -87,7 +87,7 @@ public class LabelController {
 	 * 
 	 * @param labelUpdate
 	 * @param token
-	 * @return
+	 * 
 	 */
 	
 	/*Api for deleting a Label */
@@ -102,7 +102,7 @@ public class LabelController {
 	 * 
 	 * @param labelUpdate
 	 * @param token
-	 * @return
+	 * 
 	 */
 	/*Api for updating a Label */
 	@PutMapping("/label/update")
@@ -128,7 +128,7 @@ public class LabelController {
 	 * @param labelId
 	 * @param token
 	 * @param noteId
-	 * @return
+	 * @return LabelInformation
 	 */
 	@PostMapping("/label/addLabel")
 	public ResponseEntity<UserResponse> addLabel(@RequestParam("labelId") Long labelId,@RequestHeader("token") String token,@RequestParam("noteId") Long noteId)
@@ -140,7 +140,7 @@ public class LabelController {
 	/**
 	 * 
 	 * @param token
-	 * @return
+	 * @return List<LabelInformation>
 	 */
 	/*Api for getting all labels by userId*/
 	@GetMapping("labels/getLabelsByUserId/{token}")
@@ -154,7 +154,7 @@ public class LabelController {
 	 * 
 	 * @param token
 	 * @param labelId
-	 * @return
+	 * @return List<NoteInformation>
 	 */
 	/*Api for getting All notes */
 	@GetMapping("labels/getAllNotes/{labelId}")
@@ -165,10 +165,7 @@ public class LabelController {
 		return  ResponseEntity.status(HttpStatus.FOUND).body(new UserResponse(environment.getProperty("302"),302,notesList));
 		
 	}
-	/**
-	 * 
-	 * @return
-	 */
+	
 	/*Api for sorting label name */
 	@GetMapping(value = "/label/ascendingSortByName")
 	public ResponseEntity<UserResponse> ascSortByLabelName() {
