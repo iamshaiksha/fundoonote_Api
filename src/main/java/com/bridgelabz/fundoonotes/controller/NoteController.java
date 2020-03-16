@@ -37,7 +37,7 @@ public class NoteController {
 	 * 
 	 * @param userNoteDto
 	 * @param token
-	 * @return
+	 * @return noteInformation
 	 */
 	/*Api for creating a note*/
 	@PostMapping("/note/create")
@@ -51,7 +51,7 @@ public class NoteController {
 	}
 	/**
 	 * 
-	 * @return
+	 * @return List<NoteInformation>
 	 */
 	/*Api for fetching all notes*/
 	@GetMapping("note/getAllNotes")
@@ -65,7 +65,7 @@ public class NoteController {
 	/**
 	 * 
 	 * @param id
-	 * @return
+	 * @return NoteInformation
 	 */
 	/*Api for fetching note by using id*/
 	@GetMapping("note/{id}")
@@ -83,7 +83,7 @@ public class NoteController {
 	 * 
 	 * @param updateNoteDto
 	 * @param token
-	 * @return
+	 * @return List<NoteInformation>
 	 */
 	/*Api for  update*/
 	@PutMapping("note/update")
@@ -103,7 +103,7 @@ public class NoteController {
 	 * 
 	 * @param id
 	 * @param token
-	 * @return
+	 *
 	 */
 	/*Api for  delete*/
 	@DeleteMapping("note/delete/{id}")
@@ -116,7 +116,7 @@ public class NoteController {
 	 * 
 	 * @param noteId
 	 * @param colour
-	 * @return
+	 * 
 	 */
 	/*Api for  delete*/
 	@PostMapping("note/addColour")
@@ -128,7 +128,7 @@ public class NoteController {
 	/**
 	 * 
 	 * @param token
-	 * @return
+	 * @return List<NoteInformation>
 	 */
 	@GetMapping(value = "/notes/users/{token}")
 	public ResponseEntity<UserResponse> getNotesByUserId(@PathVariable String token) {
@@ -146,7 +146,7 @@ public class NoteController {
 	 * 
 	 * @param noteId
 	 * @param token
-	 * @return
+	 * @return NoteInformation
 	 */
 	@PutMapping("/notes/pin/{noteId}/users/{token}")
 	public ResponseEntity<UserResponse> pinned(@PathVariable Long noteId, @PathVariable String token) {
@@ -156,7 +156,7 @@ public class NoteController {
 	/**
 	 * 
 	 * @param token
-	 * @return
+	 * @return List<NoteInformation>
 	 */
 	@GetMapping("/notes/getAllPinned/users/{token}")
 	public ResponseEntity<UserResponse> getPinned(@PathVariable String token) {
@@ -167,7 +167,7 @@ public class NoteController {
 	 * 
 	 * @param noteId
 	 * @param token
-	 * @return
+	 * @return NoteInformation
 	 */
 	/* API for archieve a Note */
 	@PutMapping("/note/archieve/{noteId}/users/{token}")
@@ -202,7 +202,7 @@ public class NoteController {
 	 * 
 	 * @param token
 	 * @param noteId
-	 * @return
+	 * @return NoteInformation
 	 */
 	/*
 	 * API for removing remainder Notes
@@ -212,10 +212,7 @@ public class NoteController {
 		     NoteInformation noteInformation= noteService.removeRemainder(noteId, token);
 		return ResponseEntity.status(HttpStatus.OK).body(new UserResponse("Reminder notes Removed",200,noteInformation));
 	}
-	/**
-	 * 
-	 * @return
-	 */
+	
 	@GetMapping(value = "/notes/ascendingSortByTitle")
 	public ResponseEntity<UserResponse> SortByNoteTitle() {
 		List<String> result = noteService.ascSortByName();
@@ -224,10 +221,7 @@ public class NoteController {
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new UserResponse("Note Not Exist", 400,result));
 	}
-	/**
-	 * 
-	 * @return
-	 */
+	
 	@GetMapping(value = "/notes/descSortByTitle")
 	public ResponseEntity<UserResponse> descSortByNoteTitle() {
 		List<String> result = noteService.descsortByName();
