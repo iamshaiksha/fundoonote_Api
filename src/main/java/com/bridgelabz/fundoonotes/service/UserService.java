@@ -53,10 +53,11 @@ public interface UserService {
 	/**
 	 * 
 	 * @param token
+	 * @param cacheable 
 	 * @return
 	 * @throws Exception
 	 */
-	UserInformation getSingleUser(String token) throws Exception;
+	UserInformation getSingleUser(String token, boolean cacheable) throws Exception;
 	/**
 	 * 
 	 * @param emailId
