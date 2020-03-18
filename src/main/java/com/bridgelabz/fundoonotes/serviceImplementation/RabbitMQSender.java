@@ -19,9 +19,9 @@ public class RabbitMQSender {
 	@Value("${fundoo.rabbitmq.routingkey}")
 	private String routingkey;	
 	
-	public void send(UserInformation company) {
-		rabbitTemplate.convertAndSend(exchange, routingkey, company);
-		System.out.println("Send msg = " + company);
+	public void send(String  token) {
+		rabbitTemplate.convertAndSend(exchange, routingkey, token);
+		System.out.println("Send msg = " + token);
 	    
 	}
 }
