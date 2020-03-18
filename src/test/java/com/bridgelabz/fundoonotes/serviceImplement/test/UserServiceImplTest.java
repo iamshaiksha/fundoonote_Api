@@ -13,7 +13,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.bridgelabz.fundoonotes.dto.UserRegistrationDetails;
 import com.bridgelabz.fundoonotes.model.UserInformation;
 import com.bridgelabz.fundoonotes.repository.UserDao;
 import com.bridgelabz.fundoonotes.response.MailObject;
@@ -49,7 +48,7 @@ public class UserServiceImplTest {
 	UserService  userServiceImpl=new UserServiceImpl();
 	
 	
-	@Test
+	//@Test
 	public void testGetUsers() throws Exception {
 		List<UserInformation> users=new ArrayList<>();
 		users.add(getUserInformation());
