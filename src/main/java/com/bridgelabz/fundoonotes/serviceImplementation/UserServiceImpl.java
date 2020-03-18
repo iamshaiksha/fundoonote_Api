@@ -69,9 +69,10 @@ public class UserServiceImpl implements UserService {
 			userInformation.setPassword(epassword);
 			userInformation.setIsVerified(0);
 			repository.save(userInformation);
-//			rabbitMQSender.send(userInformation);
+			String token=generate.jwtToken(userInformation.getUserId());
+			rabbitMQSender.send(token);
 			this.mailSenderService();
-			MailServiceProvider.sendMail(userInformation,mailSenderImplementation,generate.jwtToken(userInformation.getUserId()));
+			MailServiceProvider.sendMail(userInformation,mailSenderImplementation,token);
 			
 //			String mailResponse = response.fromMessage("http://localhost:8080 verify",
 //					generate.jwtToken(userInformation.getUserId()));
