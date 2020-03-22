@@ -2,8 +2,10 @@ package com.bridgelabz.fundoonotes.service;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
+import com.bridgelabz.fundoonotes.dto.ForgetPasswordDto;
 import com.bridgelabz.fundoonotes.dto.UserLoginDetails;
-import com.bridgelabz.fundoonotes.dto.UserPasswordUpdateDetails;
 import com.bridgelabz.fundoonotes.dto.UserRegistrationDetails;
 import com.bridgelabz.fundoonotes.model.UserInformation;
 
@@ -22,7 +24,7 @@ public interface UserService {
 	 * @param information
 	 * @return UserInformatio
 	 */
-	UserInformation login(UserLoginDetails information);
+	String login(UserLoginDetails information);
 	/**
 	 * 
 	 * @param token
@@ -32,16 +34,24 @@ public interface UserService {
 
 	/**
 	 * 
-	 * @param userUpdate
 	 * @param token
-	 * @return UserInformation
+	 * 
 	 */
 
-	UserInformation forgetPassword(UserPasswordUpdateDetails userUpdate, String token);
+	String forgetPassword(String token);
 	/**
 	 * 
 	 * @return Boolean
 	 */
+	
+	/**
+	 * 
+	 * @param token
+	 * @param forgetPasswordDto
+	 * @return
+	 */
+	String resetpassword(@Valid String token, ForgetPasswordDto forgetPasswordDto);
+
 
 	//	Boolean update(UserPasswordUpdateDetails information, String token);
 
@@ -64,5 +74,6 @@ public interface UserService {
 	 * 
 	 */
 	String emailVerify(String emailId);
-
+	
+	
 }
