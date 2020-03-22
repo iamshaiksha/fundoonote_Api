@@ -4,12 +4,12 @@ package com.bridgelabz.fundoonotes.repository;
  * 
  * */
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.bridgelabz.fundoonotes.dto.UserPasswordUpdateDetails;
 import com.bridgelabz.fundoonotes.model.UserInformation;
 @Repository
 public interface UserDao extends CrudRepository<UserInformation, Long>{
@@ -27,5 +27,7 @@ public interface UserDao extends CrudRepository<UserInformation, Long>{
 	boolean verify(Long id);
 	@Query(value=" select * from user_information where name=?",nativeQuery=true)
 	List<UserInformation> findByName(String text);
+	@Query(value=" select * from user_information where email=?",nativeQuery=true)
+	Optional<UserInformation> findByEmailId(String email);
 
 }
