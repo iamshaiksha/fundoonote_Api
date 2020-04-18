@@ -4,6 +4,8 @@ package com.bridgelabz.fundoonotes.util;
  * 
  * */
 
+import java.util.Optional;
+
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -11,6 +13,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 
+import com.bridgelabz.fundoonotes.model.NoteInformation;
 import com.bridgelabz.fundoonotes.model.UserInformation;
 @Component
 public class MailServiceProvider {
@@ -19,6 +22,7 @@ public class MailServiceProvider {
 	@Autowired
 	JavaMailSender javaMailSender;
 	@Autowired
+	static
 	JavaMailSenderImpl mailSenderImplementation;
 	
 	
@@ -51,4 +55,8 @@ public class MailServiceProvider {
 		return link + genarator.jwtToken(id);
 	}
 
-}
+
+	
+	}
+
+	

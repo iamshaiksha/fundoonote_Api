@@ -17,13 +17,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.fundoonotes.dto.LabelDto;
+import com.bridgelabz.fundoonotes.dto.LabelNote;
 import com.bridgelabz.fundoonotes.dto.LabelUpdate;
 import com.bridgelabz.fundoonotes.model.LabelInformation;
 import com.bridgelabz.fundoonotes.model.NoteInformation;
+import com.bridgelabz.fundoonotes.response.Response;
 import com.bridgelabz.fundoonotes.response.UserResponse;
 import com.bridgelabz.fundoonotes.service.LabelService;
 
@@ -33,6 +36,7 @@ import com.bridgelabz.fundoonotes.service.LabelService;
  */
 @RestController
 @PropertySource("classpath:Message.properties")
+@RequestMapping("/labels")
 public class LabelController {
 	/*Api for creating a Label */
 	@Autowired
@@ -45,9 +49,10 @@ public class LabelController {
 	 * @param token
 	 * @return LabelInformation
 	 */
-	@PostMapping("/label/notes/{token}")
+	@PostMapping("/create")
 	public ResponseEntity<UserResponse> createLabel(@RequestBody LabelDto labelDto,@RequestHeader("token") String token)
 	{
+		System.out.println("1)Label="+labelDto.getName());
 		LabelInformation label=labelService.createLabel(labelDto,token);
 		if(label!=null)
 		{
@@ -63,12 +68,12 @@ public class LabelController {
 	 * @return List<LabelInformation>
 	 */
 	/*Api for  Fetching AllLabels */
-	@GetMapping("label/getAllLabels")
-	public ResponseEntity<UserResponse> getAllLabels()
+	@GetMapping("/getAllLabels")
+	public List<LabelInformation> getAllLabels()
 	{
 		List<LabelInformation> labelInfromation=labelService.getAllLabels();
-		return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(environment.getProperty("200"),200,labelInfromation));
-		
+		return labelInfromation;
+	
 	}
 	/**
 	 * 
@@ -76,7 +81,7 @@ public class LabelController {
 	 * @return LabelInformation
 	 */
 	/*Api for getting a Label */
-	@GetMapping("label/getLabel/{id}")
+	@GetMapping("/getLabel/{id}")
 	public ResponseEntity<UserResponse> getLabel(@PathVariable Long id )
 	{
 		LabelInformation labelInformation=labelService.getLabel(id);
@@ -91,10 +96,10 @@ public class LabelController {
 	 */
 	
 	/*Api for deleting a Label */
-	@DeleteMapping("/label/delete/{token}")
-	public ResponseEntity<UserResponse> deleteLabel(@RequestBody LabelUpdate labelUpdate,@RequestHeader String token)
+	@DeleteMapping("/delete")
+	public ResponseEntity<UserResponse> deleteLabel(@RequestHeader String token, @RequestParam Long labelId)
 	{
-		labelService.deleteLabel(labelUpdate,token);
+		labelService.deleteLabel(token,labelId);
 		return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(environment.getProperty("200"),200));
 		
 	}
@@ -105,7 +110,7 @@ public class LabelController {
 	 * 
 	 */
 	/*Api for updating a Label */
-	@PutMapping("/label/update")
+	@PutMapping("/update")
 	public ResponseEntity<UserResponse> updateLabel(@RequestBody LabelUpdate labelUpdate,@RequestHeader("token") String token )
 	{
 		labelService.update(labelUpdate,token);
@@ -130,12 +135,11 @@ public class LabelController {
 	 * @param noteId
 	 * @return LabelInformation
 	 */
-	@PostMapping("/label/addLabel")
-	public ResponseEntity<UserResponse> addLabel(@RequestParam("labelId") Long labelId,@RequestHeader("token") String token,@RequestParam("noteId") Long noteId)
+	@PostMapping("/addLabel/{token}")
+	public LabelInformation addLabel(@RequestBody LabelNote labelNote,@PathVariable String token)
 	{
-		LabelInformation labelInformation=labelService.addLabel(labelId,token,noteId);
-		return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponse(environment.getProperty("201"),201,labelInformation));
-		
+		LabelInformation labelInformation=labelService.addLabel(labelNote.getLabelId(),token,labelNote.getNoteId());
+		return 	labelInformation;
 	}
 	/**
 	 * 
@@ -143,11 +147,11 @@ public class LabelController {
 	 * @return List<LabelInformation>
 	 */
 	/*Api for getting all labels by userId*/
-	@GetMapping("labels/getLabelsByUserId/{token}")
-	public ResponseEntity<UserResponse> getLabelsByUseid(@PathVariable("token") String token)
+	@GetMapping("/getLabelsByUserId/{token}")
+	public List<LabelInformation> getLabelsByUseid(@PathVariable("token") String token)
 	{
 		List<LabelInformation> list=labelService.getLabelsByUserId(token);
-		return  ResponseEntity.status(HttpStatus.FOUND).body(new UserResponse(environment.getProperty("302"),302,list));
+		return  list;
 		
 	}
 	/**
@@ -157,7 +161,7 @@ public class LabelController {
 	 * @return List<NoteInformation>
 	 */
 	/*Api for getting All notes */
-	@GetMapping("labels/getAllNotes/{labelId}")
+	@GetMapping("/getAllNotes/{labelId}")
 	public ResponseEntity<UserResponse> getNotes(@RequestHeader("token") String token,@PathVariable("labelId") Long labelId)
 	{
 		List<NoteInformation> notesList=labelService.getNotes(token,labelId);
@@ -167,7 +171,7 @@ public class LabelController {
 	}
 	
 	/*Api for sorting label name */
-	@GetMapping(value = "/label/ascendingSortByName")
+	@GetMapping(value = "/ascendingSortByName")
 	public ResponseEntity<UserResponse> ascSortByLabelName() {
 		List<String> result = labelService.ascsortByName();
 		if (result != null) {
@@ -176,12 +180,19 @@ public class LabelController {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new UserResponse(environment.getProperty("400"), 400,result));
 	}
 	/*Api for  descending label name */
-	@GetMapping(value = "/label/DescSortByName")
+	@GetMapping(value = "/DescSortByName")
 	public ResponseEntity<UserResponse> descSortByLabelName() {
 		List<String> result = labelService.descsortByName();
 		if (result != null) {
 			return ResponseEntity.status(HttpStatus.ACCEPTED).body(new UserResponse(environment.getProperty("200"),200, result));
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new UserResponse(environment.getProperty("400"), 400,result));
+	}
+	@PostMapping("/RemoveLabelToNote")
+	public ResponseEntity<Response> removeLabel(@RequestParam Long noteId,@RequestHeader String token,@RequestParam Long labelId)
+	{
+		String message = labelService.removeLable(noteId, token, labelId);
+		Response response= new Response(HttpStatus.OK.value(), message, "");
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 }

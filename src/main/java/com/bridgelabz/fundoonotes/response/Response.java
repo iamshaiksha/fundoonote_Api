@@ -38,4 +38,9 @@ public class Response {
 	public void setData(Object data) {
 		this.data = data;
 	}
+
+	public void setStatusCode(int status) {
+		this.statuscode=status;
+		
+	}
 }

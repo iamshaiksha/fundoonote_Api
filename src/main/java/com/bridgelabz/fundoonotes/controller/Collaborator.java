@@ -41,10 +41,9 @@ public class Collaborator {
 	 * @return noteInformation
 	 */
 	//Api for adding collaborator
-	@PostMapping("Collaborate/addcollaborator/{noteId}/{email}")
+	@PostMapping("addcollaborator")
 	public ResponseEntity<UserResponse> addCollaborator(@RequestParam("noteId") Long noteId,@RequestParam("email") String email,@RequestHeader("token") String token)
 	{
-		
 		Optional<NoteInformation> noteInformation=serviceCollborator.addCollaborator(noteId,email,token);
 		return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponse(environment.getProperty("201"),201,noteInformation));
 		
@@ -52,15 +51,17 @@ public class Collaborator {
 	/**
 	 * 
 	 * @param token
+	 * @return 
 	 * @return List<NoteInformation>
 	 */
 	//Api for fetching All collaborators
-	@GetMapping("collaborator/getAllcollaborators")
-	public ResponseEntity<UserResponse> getAllCollaborator(@RequestHeader("token") String token)
+	@GetMapping("/getAllcollaborators")
+	public  List<NoteInformation> getAllCollaborator(@RequestHeader("token") String token)
 	{
 		
 		List<NoteInformation> noteList=serviceCollborator.getAllCollaborarors(token);
-		return ResponseEntity.status(HttpStatus.FOUND).body(new UserResponse(environment.getProperty("302"),302,noteList));
+		
+		return noteList;
 		
 	}
 	/**

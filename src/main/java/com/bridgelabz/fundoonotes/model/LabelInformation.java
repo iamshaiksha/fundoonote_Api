@@ -1,10 +1,17 @@
 
 package com.bridgelabz.fundoonotes.model;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,10 +33,23 @@ public class LabelInformation {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long labelId;
 	private String name;
+	public Long getLabelId() {
+		return labelId;
+	}
+	public void setLabelId(Long labelId) {
+		this.labelId = labelId;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 	
 	
-//	@ManyToMany(mappedBy="labelList",fetch=FetchType.EAGER,cascade=CascadeType.PERSIST)
-//	private List<NoteInformation> noteList;
+	@ManyToMany(mappedBy="labelList",fetch=FetchType.EAGER,cascade=CascadeType.PERSIST)
+	@JsonIgnore
+	private List<NoteInformation> noteList;
 	
 }

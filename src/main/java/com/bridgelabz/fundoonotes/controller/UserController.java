@@ -1,4 +1,8 @@
 package com.bridgelabz.fundoonotes.controller;
+import java.io.IOException;
+import java.net.URL;
+
+import org.springframework.util.StringUtils;
 import java.util.HashMap;
 /**
  * @author shaik shaiksha vali
@@ -7,11 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,14 +92,16 @@ public class UserController {
 	@PostMapping("user/Login")
 	//@RequestMapping(path="user/Login", method=RequestMethod.POST)
 	public ResponseEntity<Response> Login(@RequestBody UserLoginDetails information) {
+		System.out.println("Entered into the Api through ui");
 		String token = userService.login(information);
-		if (token!= null) {
+//		if (token!= null) {
 			
 			System.out.println(token);
 			Response response = new Response(HttpStatus.OK.value(),"User loggedin successfully", token);
+			System.out.println("token"+response.getStatusMessage());
 			return new ResponseEntity<>(response, HttpStatus.OK);
-		}
-		return null;
+//		}
+//		return null;
 		
 	}
 	/**
@@ -133,11 +141,13 @@ public class UserController {
 	 * @return
 	 */
 	/* API for reset the forget password */
-	@PostMapping("user/forgetPassword")
-	public ResponseEntity<Response> forgetPassword(String email) {
+	@PostMapping("user/forgetPassword/{email}")
+	public ResponseEntity<Response> forgetPassword(@PathVariable("email") String email) {
+		System.out.println("-----------------ui"+email);
 		String result = userService.forgetPassword(email);
 		System.out.println("result -----"+result);
-		Response response = new Response(HttpStatus.OK.value(), result, "");
+		Response response = new Response(HttpStatus.OK.value(), result,"");
+		System.out.println("result="+result);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 		
@@ -194,26 +204,39 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(new UserResponse(environment.getProperty("202"), 202, user));
 	}
 	
-	@PostMapping(value="/uploadProfile")
-    public Map<String, String> uploadProfile(@RequestPart(value = "file") MultipartFile file,@RequestPart("token") String token)
+	@PostMapping("user/uploadProfile")
+    public URL uploadProfile(@RequestParam("file")MultipartFile file,@RequestHeader("token") String token)
     {
-        this.amazonS3ClientService.uploadFileToS3Bucket(file, true,token);
+		System.out.println("#######");
+      URL url=  this.amazonS3ClientService.uploadFileToS3Bucket(file, true,token);
 
         Map<String, String> response = new HashMap<>();
-        response.put("message", "file [" + file.getOriginalFilename() + "] uploading request submitted successfully.");
-
-        return response;
+        response.put("message", "file [" + StringUtils.cleanPath(file.getOriginalFilename()) + "] uploading request submitted successfully.");
+      return url;
     }
-
     @DeleteMapping(value="/deleteProfile")
     public Map<String, String> deleteProfile(@RequestParam("file_name") String fileName,@RequestPart("token") String token)
     {
         this.amazonS3ClientService.deleteFileFromS3Bucket(fileName,token);
-
         Map<String, String> response = new HashMap<>();
         response.put("message", "file [" + fileName + "] removing request submitted successfully.");
-
         return response;
     }
-
+    @GetMapping("/ui/{userName}")
+	public UserInformation getUserByUserName(@PathVariable String userName)
+	{
+    	UserInformation user=userService.getUserByUserName(userName);
+		
+		return user;
+	}
+    @GetMapping("/url/get")
+    public String getUrl()
+    {	
+    	System.out.println("In controller url");
+    	userService.getUrl();
+		return "url fetched successfully";
+    }
+    
+    
+    
 }
