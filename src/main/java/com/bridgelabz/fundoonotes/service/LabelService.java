@@ -41,7 +41,7 @@ public interface LabelService {
 	 */
 	LabelInformation getLabel(Long id);
 
-	void deleteLabel(LabelUpdate labelUpdate, String token);
+	void deleteLabel(String token, Long labelId);
 
 	void update(LabelUpdate labelUpdate, String token);
 
@@ -83,6 +83,8 @@ public interface LabelService {
 	 */
 	
 	List<String> descsortByName();
+
+	String removeLable(Long noteId, String token, Long labelId);
 
 
 	

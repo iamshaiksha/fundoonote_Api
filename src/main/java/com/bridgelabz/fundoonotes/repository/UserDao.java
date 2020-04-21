@@ -18,7 +18,7 @@ public interface UserDao extends CrudRepository<UserInformation, Long>{
 	@Query(value=" select * from user_information where user_id=?",nativeQuery=true)
 	UserInformation findUserById(Long id);
 	@Query(value=" select * from user_information where email=?",nativeQuery=true)
-	UserInformation getUser(String Email);
+	UserInformation getUser(String email);
 //	@Query(value=" update user_information set password=? where email=?",nativeQuery=true)
 //	boolean update(UserPasswordUpdateDetails information, Long id);
 	@Query(value=" select * from user_information",nativeQuery=true)
@@ -29,5 +29,7 @@ public interface UserDao extends CrudRepository<UserInformation, Long>{
 	List<UserInformation> findByName(String text);
 	@Query(value=" select * from user_information where email=?",nativeQuery=true)
 	Optional<UserInformation> findByEmailId(String email);
+	@Query(value=" select * from user_information where name=?",nativeQuery=true)
+	UserInformation findByUserName(String userName);
 
 }

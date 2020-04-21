@@ -173,7 +173,7 @@ public class UserServiceImpl implements UserService {
 			emailobj.setEmailId("iamshaiksha2019@gmail.com");
 			emailobj.setTo(email);
 			emailobj.setSubject("ChangeLink");
-			emailobj.setBody(mailService.getlink("http://localhost:8080/resetPassword/", user.getUserId()));
+			emailobj.setBody(mailService.getlink("http://localhost:4200/resetPassword/", user.getUserId()));
 			this.mailSenderService();
 			mailService.send(emailobj);
 			return environment.getProperty("user.forget.password");

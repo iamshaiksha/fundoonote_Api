@@ -2,7 +2,9 @@
 package com.bridgelabz.fundoonotes.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.bridgelabz.fundoonotes.dto.Delete;
 import com.bridgelabz.fundoonotes.dto.RemainderDto;
 import com.bridgelabz.fundoonotes.dto.UpdateNote;
 import com.bridgelabz.fundoonotes.dto.UserNoteDto;
@@ -32,7 +34,7 @@ List<NoteInformation> getAllNotes();
  * @param id
  * @return NoteInformation  
  */
-NoteInformation getNote(String id);
+NoteInformation getNote(long id);
 /**
  * 
  * @param updateNoteDto
@@ -44,11 +46,12 @@ List<NoteInformation> updateNote(UpdateNote updateNoteDto, String token);
  * 
  * @param id
  * @param token
+ * @return 
  */
-void deleteNote(Long id, String token);
+NoteInformation deleteNote(String token, Long noteId);
 /**
  * 
- * @param noteId
+ * @param noteIds
  * @param colour
  * @return 
  */
@@ -73,7 +76,7 @@ NoteInformation pinned(Long noteId, String token);
  * @param token
  * @return NoteInformation
  */
-NoteInformation archieveNote(Long noteId, String token);
+NoteInformation archieveNote( String token,long nid);
 /**
  * 
  * @param noteId
@@ -118,6 +121,8 @@ List<String> descsortByName();
  * @return List<LabelInformation>
  */
 List<LabelInformation> getLabelsFromNote(Long noteId, String token);
+List<NoteInformation> getAlltrashednotes(String token);
+NoteInformation unpinned(Long noteId, String token);
 	
 	
 }

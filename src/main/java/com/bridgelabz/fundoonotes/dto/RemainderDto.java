@@ -19,7 +19,19 @@ import lombok.ToString;
 @ToString
 public class RemainderDto {
 
-
-	private LocalDateTime remainder;
+	 private long noteId;
+	private String remainder;
+	public long getNoteId() {
+		return noteId;
+	}
+	public void setNoteId(long noteId) {
+		this.noteId = noteId;
+	}
+	public String getRemainder() {
+		return remainder;
+	}
+	public void setRemainder(String remainder) {
+		this.remainder = remainder;
+	}
 
 }

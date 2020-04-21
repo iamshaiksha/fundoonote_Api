@@ -1,8 +1,11 @@
 package com.bridgelabz.fundoonotes.service;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 import javax.validation.Valid;
+
+import org.springframework.core.io.Resource;
 
 import com.bridgelabz.fundoonotes.dto.ForgetPasswordDto;
 import com.bridgelabz.fundoonotes.dto.UserLoginDetails;
@@ -74,6 +77,12 @@ public interface UserService {
 	 * 
 	 */
 	String emailVerify(String emailId);
+
+	UserInformation getUserByUserName(String userName);
+
+	void getUrl();
+
+	
 	
 	
 }
