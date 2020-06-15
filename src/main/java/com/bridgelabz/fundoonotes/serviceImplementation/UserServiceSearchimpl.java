@@ -94,7 +94,7 @@ public class UserServiceSearchimpl implements UserServiceSearch {
 	public List<NoteInformation> getNoteByTitleAndDescription(String text) {
 		// TODO Auto-generated method stub
 		
-SearchRequest searchRequest = buildSearchRequest(INDEX, TYPE);
+		SearchRequest searchRequest = buildSearchRequest(INDEX, TYPE);
 		
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		QueryBuilder query = QueryBuilders.boolQuery()

@@ -26,11 +26,7 @@ public class AppConfig {
 		return new ModelMapper();
 	}
 
-//	@Bean
-//	public MailServiceProvider getSpringMail() {
-//		return new MailServiceProvider();
-//
-//	}
+
 	@Bean
 	public JavaMailSenderImpl mail()
 	{

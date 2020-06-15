@@ -1,6 +1,5 @@
 package com.bridgelabz.fundoonotes.dto;
 
-import com.sun.istack.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

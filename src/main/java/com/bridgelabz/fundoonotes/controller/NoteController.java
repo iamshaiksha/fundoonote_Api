@@ -287,7 +287,6 @@ public class NoteController {
 	
 	@GetMapping("/search")
 	public List<NoteInformation> searchTitle(@RequestParam String title) {
-		//return esService.searchByTitle(title, token);
 		List<NoteInformation> data =null;
 		try {
 			data = userServiceSearch.getNoteByTitleAndDescription(title);

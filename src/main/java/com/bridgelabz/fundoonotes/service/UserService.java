@@ -80,7 +80,7 @@ public interface UserService {
 
 	UserInformation getUserByUserName(String userName);
 
-	void getUrl();
+	
 
 	
 	

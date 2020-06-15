@@ -58,8 +58,8 @@ public class UserController {
 	private JwtGenerator jwtGenerator;
 	@Autowired
 	private Environment environment;
-	@Autowired
-    private AmazonClientService amazonS3ClientService;
+//	@Autowired
+//    private AmazonClientService amazonS3ClientService;
 
 
 	@Autowired
@@ -204,24 +204,24 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(new UserResponse(environment.getProperty("202"), 202, user));
 	}
 	
-	@PostMapping("user/uploadProfile")
-    public URL uploadProfile(@RequestParam("file")MultipartFile file,@RequestHeader("token") String token)
-    {
-		System.out.println("#######");
-      URL url=  this.amazonS3ClientService.uploadFileToS3Bucket(file, true,token);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "file [" + StringUtils.cleanPath(file.getOriginalFilename()) + "] uploading request submitted successfully.");
-      return url;
-    }
-    @DeleteMapping(value="/deleteProfile")
-    public Map<String, String> deleteProfile(@RequestParam("file_name") String fileName,@RequestPart("token") String token)
-    {
-        this.amazonS3ClientService.deleteFileFromS3Bucket(fileName,token);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "file [" + fileName + "] removing request submitted successfully.");
-        return response;
-    }
+//	@PostMapping("user/uploadProfile")
+//    public URL uploadProfile(@RequestParam("file")MultipartFile file,@RequestHeader("token") String token)
+//    {
+//		System.out.println("#######");
+//      URL url=  this.amazonS3ClientService.uploadFileToS3Bucket(file, true,token);
+//
+//        Map<String, String> response = new HashMap<>();
+//        response.put("message", "file [" + StringUtils.cleanPath(file.getOriginalFilename()) + "] uploading request submitted successfully.");
+//      return url;
+//    }
+//    @DeleteMapping(value="/deleteProfile")
+//    public Map<String, String> deleteProfile(@RequestParam("file_name") String fileName,@RequestPart("token") String token)
+//    {
+//        this.amazonS3ClientService.deleteFileFromS3Bucket(fileName,token);
+//        Map<String, String> response = new HashMap<>();
+//        response.put("message", "file [" + fileName + "] removing request submitted successfully.");
+//        return response;
+//    }
     @GetMapping("/ui/{userName}")
 	public UserInformation getUserByUserName(@PathVariable String userName)
 	{
@@ -229,14 +229,5 @@ public class UserController {
 		
 		return user;
 	}
-    @GetMapping("/url/get")
-    public String getUrl()
-    {	
-    	System.out.println("In controller url");
-    	userService.getUrl();
-		return "url fetched successfully";
-    }
-    
-    
-    
+        
 }
