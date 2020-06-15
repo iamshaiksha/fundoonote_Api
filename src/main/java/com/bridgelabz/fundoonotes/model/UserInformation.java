@@ -37,7 +37,6 @@ import lombok.ToString;
 @Table(name = "UserInformation")
 public class UserInformation {
 	@Id
-	
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private Long userId;

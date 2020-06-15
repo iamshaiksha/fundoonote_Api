@@ -24,8 +24,8 @@ public class MailServiceProvider {
 	@Autowired
 	static
 	JavaMailSenderImpl mailSenderImplementation;
-	
-	
+
+
 	public static void sendMail(UserInformation userInformation, JavaMailSenderImpl mailSenderImplementation, String jwtToken) {
 		// TODO Auto-generated method stub
 		try {
@@ -38,8 +38,8 @@ public class MailServiceProvider {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 	public void send(Email emailid) {
 		System.out.println("Sending mail to receiver");
 		SimpleMailMessage message = new SimpleMailMessage();
@@ -47,7 +47,7 @@ public class MailServiceProvider {
 		message.setSubject(emailid.getSubject());
 		message.setText(emailid.getBody());
 		mailSenderImplementation.send(message);
-//		javaMailSender.send(message);
+		//		javaMailSender.send(message);
 
 		System.out.println("email sent successfully");
 	}
@@ -56,7 +56,7 @@ public class MailServiceProvider {
 	}
 
 
-	
-	}
 
-	
+}
+
+

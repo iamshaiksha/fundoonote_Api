@@ -1,11 +1,10 @@
-/**
- * 
- */
+
 package com.bridgelabz.fundoonotes.serviceImplementation;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -62,12 +61,12 @@ public class LabelServiceImplementattion implements LabelService{
 
 			if(user!=null)
 			{
-				//LabelInformation label=modelMapper.map(labelDto, LabelInformation.class);
-				BeanUtils.copyProperties(labelDto,labelInformation);
-				labelInformation.setName(labelDto.getName());
-				user.getLables().add(labelInformation);
+				LabelInformation label=modelMapper.map(labelDto, LabelInformation.class);
+//				BeanUtils.copyProperties(labelDto,labelInformation);
+				label.setName(labelDto.getName());
+				user.getLables().add(label);
 
-				return userlabelRepository.save(labelInformation);
+				return userlabelRepository.save(label);
 
 			}
 		}catch(Exception e)
@@ -97,18 +96,18 @@ public class LabelServiceImplementattion implements LabelService{
 
 	@Transactional
 	@Override
-	public void deleteLabel(LabelUpdate labelUpdate, String token) {
-
+	public void deleteLabel( String token,Long lableId) {
+		System.out.println(lableId);
 		Long id=generator.parseJWT(token);
 		UserInformation userInformation=userDao.findUserById(id);
 		if(userInformation!=null)
 		{
 			try {
-			LabelInformation labelInformation=userlabelRepository.findLabelById(labelUpdate.getLabelId());
-
+			LabelInformation labelInformation=userlabelRepository.findLabelById(lableId);
+			System.out.println("#########");
 			if(labelInformation!=null)
-			{
-				userlabelRepository.deleteById(labelInformation.getLabelId());
+			{	System.out.println("***********");
+			 	userlabelRepository.deleteById(labelInformation.getLabelId());
 			}
 			}
 			catch (Exception e) {
@@ -262,6 +261,49 @@ public class LabelServiceImplementattion implements LabelService{
 		return labelList;	
 
 
+	}
+	@Transactional
+	@Override
+	public String removeLable(Long noteId, String token, Long labelId) {
+		// TODO Auto-generated method stub
+		
+		
+		Long id=generator.parseJWT(token);
+		Optional<UserInformation> user = userDao.findById(id);
+		Optional<NoteInformation> optionalNote = userNoteRepository.findById(noteId);
+		Optional<LabelInformation> optionalLabel = userlabelRepository.findById(labelId);
+		if (!user.isPresent() && optionalLabel.isPresent() && optionalNote.isPresent()) {
+			return environment.getProperty("note.notfound");
+		} else {
+			LabelInformation label = optionalLabel.get();
+			NoteInformation note = optionalNote.get();
+//			note.setUpdateTime(Utility.todayDate());
+			List<LabelInformation> labelList = new ArrayList<LabelInformation>();
+			labelList = note.getLabelList();
+			if (labelList.stream().filter(l -> l.getLabelId().equals(label.getLabelId())).findFirst().isPresent()) {
+				LabelInformation findLabel = labelList.stream().filter(l -> l.getLabelId().equals(label.getLabelId())).findFirst()
+						.get();
+				labelList.remove(findLabel);
+				userNoteRepository.save(note);
+				
+				return environment.getProperty("note.remove.labels");
+			}
+
+			return environment.getProperty("note.remove.lables.fail");
+		}
+//		return null;
+		
+	}
+
+	@Override
+	public List<NoteInformation> getnotesfromlabel(String token, Long labelid) {
+
+		Long id=generator.parseJWT(token);
+		UserInformation user=userDao.findUserById(id);
+		LabelInformation label=userlabelRepository.findLabelById(labelid);
+		List<NoteInformation> notelist=label.getNoteList();
+//		List<NoteEntity> notelist=labelrepo.getnotesfromlabel(labelid);
+		return notelist;
 	}
 
 

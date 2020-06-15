@@ -195,4 +195,11 @@ public class LabelController {
 		Response response= new Response(HttpStatus.OK.value(), message, "");
 		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
+	@GetMapping("/getnotesfromlabel/{labelid}")
+	public List<NoteInformation> getNotesFromLabel(@RequestHeader String token,@PathVariable("labelid") Long labelid)
+	{
+		System.out.println("getting into labelsnotes");
+		List<NoteInformation> notelist=labelService.getnotesfromlabel(token,labelid);
+		return notelist;
+	}
 }

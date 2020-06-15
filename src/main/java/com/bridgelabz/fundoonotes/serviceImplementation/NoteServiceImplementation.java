@@ -6,6 +6,7 @@ package com.bridgelabz.fundoonotes.serviceImplementation;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ import com.bridgelabz.fundoonotes.model.UserInformation;
 import com.bridgelabz.fundoonotes.repository.UserDao;
 import com.bridgelabz.fundoonotes.repository.UserNoteRepository;
 import com.bridgelabz.fundoonotes.service.NoteService;
+import com.bridgelabz.fundoonotes.service.UserServiceSearch;
 import com.bridgelabz.fundoonotes.util.JwtGenerator;
 
 /**
@@ -41,6 +43,8 @@ import com.bridgelabz.fundoonotes.util.JwtGenerator;
 public class NoteServiceImplementation implements NoteService{
 	@Autowired
 	private JwtGenerator generate;
+	@Autowired(required = true)
+	private UserServiceSearch userServiceSearch;
 	@Autowired
 	private Environment environment;
 	UserInformation userInformation=new UserInformation();
@@ -48,6 +52,10 @@ public class NoteServiceImplementation implements NoteService{
 	private UserNoteRepository userNoteRepository;
 	@Autowired
 	private UserDao userDao;
+//	@Autowired
+//	 public NoteServiceImplementation(UserServiceSearch userServiceSearch) {
+//	        this.userServiceSearch = userServiceSearch;
+//	    }
 	//	@Autowired
 	//	private ModelMapper modelMapper;
 	NoteInformation note=new NoteInformation();
@@ -55,6 +63,7 @@ public class NoteServiceImplementation implements NoteService{
 	@Transactional
 	@Override
 	public NoteInformation create(UserNoteDto userNoteDto, String token) {
+		
 NoteInformation note=new NoteInformation();
 		Long id=(Long)generate.parseJWT(token);
 		System.out.println("id="+id);
@@ -66,7 +75,7 @@ NoteInformation note=new NoteInformation();
 					BeanUtils.copyProperties(userNoteDto,note);
 					note.setCreateDateTime(LocalDateTime.now());
 					note.setIsArchieved(1);
-					note.setColor("green");
+					note.setColor("white");
 					note.setIsPinned(1);
 					note.setIsTrashed(1);
 					note.setReminder(null);
@@ -74,7 +83,14 @@ NoteInformation note=new NoteInformation();
 					note.setDescription(userNoteDto.getDescription());
 					note.setTitle(userNoteDto.getTitle());
 					user.getNote().add(note);
-					return userNoteRepository.save(note);
+				 NoteInformation notes=userNoteRepository.save(note);
+				 try {
+					 userServiceSearch.createNote(notes);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				 return notes;
+				 
 	}
 
 	@Transactional
@@ -88,9 +104,9 @@ NoteInformation note=new NoteInformation();
 	}
 	@Transactional
 	@Override
-	public NoteInformation getNote(String id1) {
-		Long id=Long.parseLong(id1);
-		NoteInformation noteInformation=userNoteRepository.findNoteById(id);
+	public NoteInformation getNote(long id1) {
+//		Long id=Long.parseLong(id1);
+		NoteInformation noteInformation=userNoteRepository.findNoteById(id1);
 		return noteInformation;
 	}
 	@Transactional
@@ -101,23 +117,31 @@ NoteInformation note=new NoteInformation();
 
 		Long id=generate.parseJWT(token);
 		userInformation=userDao.findUserById(id);
-		Optional<NoteInformation> noteInformation= userNoteRepository.findById(updateNoteDto.getId());
+		Optional<NoteInformation> noteInformation= userNoteRepository.findById(updateNoteDto.getNoteId());
 		return noteInformation.filter(note -> {
 			return note != null;
-		}).map(note->{note.setNoteId(updateNoteDto.getId());
+		}).map(note->{
 		note.setTitle(updateNoteDto.getTitle());
 		note.setDescription(updateNoteDto.getDescription());
-		note.setIsTrashed(updateNoteDto.getIsTrashed());
+//		note.setIsTrashed(updateNoteDto.getIsTrashed());
 //		note.setColor(updateNoteDto.getColor());
-		note.setUpDateTime(LocalDateTime.now());
-		userNoteRepository.save(note);
+//		note.setUpDateTime(LocalDateTime.now());
+		NoteInformation notes=userNoteRepository.save(note);
+		
+		
+		try {
+			userServiceSearch.upDateNote(notes);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return list;
 		}).orElseThrow(()->new UserException(HttpStatus.BAD_REQUEST,environment.getProperty("404")));
 	}
 
 	@Transactional
 	@Override
-	public NoteInformation deleteNote(String token, long noteId) {
+	public NoteInformation deleteNote(String token, Long noteId) {
 		try
 		{	NoteInformation noteInformation=new NoteInformation();
 			Long userId=generate.parseJWT(token);
@@ -131,15 +155,17 @@ NoteInformation note=new NoteInformation();
 			NoteInformation data = notes.stream().filter(t -> t.getNoteId() == noteId).findFirst()
 					.orElseThrow(() -> new NoteException(HttpStatus.BAD_REQUEST, environment.getProperty("404")));
 			try {
-				noteInformation.setIsTrashed(0);
-				userNoteRepository.save(data);
-				userNoteRepository.delete(data);
-				
+				data.setIsTrashed(0);
+//				noteInformation.setIsArchieved(1);
+				 NoteInformation note= userNoteRepository.save(data);
+//				userNoteRepository.delete(data);
+				 userServiceSearch.deleteNote(String.valueOf(noteId));
+				return note; 
 
 			} catch (Exception ae) {
 				throw new NoteException(HttpStatus.INTERNAL_SERVER_ERROR, environment.getProperty("500"));
 			}
-			return notes.get(0);
+			
 			
 		}catch(Exception e)
 		{
@@ -159,7 +185,13 @@ NoteInformation note=new NoteInformation();
 			map(note->{
 			note.setColor(color);
 			note.setUpDateTime(LocalDateTime.now());
-			userNoteRepository.save(note);
+			NoteInformation notes=userNoteRepository.save(note);
+			try {
+				userServiceSearch.upDateNote(note);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return environment.getProperty("201");
 			}).orElseThrow(()->new UserException(HttpStatus.BAD_REQUEST,environment.getProperty("404")));
 		 
@@ -189,12 +221,12 @@ NoteInformation note=new NoteInformation();
 		try {
 			if (noteList!= null) {
 				NoteInformation data =noteList.stream().filter(note->note.getNoteId()==noteId).findFirst().orElseThrow(()->new NoteException(HttpStatus.BAD_REQUEST,"Note not exist on the user"));
-				data.setIsPinned(1);
-				data.setIsArchieved(1);
+				data.setIsPinned(0);
+//				data.setIsArchieved(1);
 				data.setUpDateTime(LocalDateTime.now());
-				return userNoteRepository.save(data);
-
-
+				NoteInformation note= userNoteRepository.save(data);
+				userServiceSearch.upDateNote(note);
+				return note;
 			}
 		} catch (Exception ae) {
 			throw new NoteException(HttpStatus.INTERNAL_SERVER_ERROR,"Note Record Not Pinned due to Internal Error");
@@ -213,11 +245,12 @@ NoteInformation note=new NoteInformation();
 			NoteInformation data = noteList.stream().filter(t -> t.getNoteId() == noteId).findFirst()
 					.orElseThrow(()->new NoteException(HttpStatus.BAD_REQUEST,environment.getProperty("400")));
 
-			data.setIsPinned(0);
-			data.setIsArchieved(1);
+//			data.setIsPinned(1);
+			data.setIsArchieved(0);
 			data.setUpDateTime(LocalDateTime.now());
-			return userNoteRepository.save(data);
-
+			NoteInformation note=userNoteRepository.save(data);
+			userServiceSearch.upDateNote(note);
+			return note;
 		} catch (Exception ae) {
 			throw new NoteException(HttpStatus.INTERNAL_SERVER_ERROR,environment.getProperty("500"));
 		}
@@ -229,19 +262,25 @@ NoteInformation note=new NoteInformation();
 		Long id=generate.parseJWT(token);
 		List<NoteInformation> noteList = userNoteRepository.findNoteByUserId(id);
 
-		try {
+		
 			if (noteList != null) {
 				NoteInformation noteData = noteList.stream().filter(t -> t.getNoteId() == noteId).findFirst()
 						.orElseThrow(()->new NoteException(HttpStatus.BAD_REQUEST,environment.getProperty("400")));
 				noteData.setReminder(remainder.getRemainder());
-				return userNoteRepository.save(noteData);
+				NoteInformation note= userNoteRepository.save(noteData);
+				try {
+					userServiceSearch.upDateNote(note);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return note;
 			}
-		} catch (Exception ae) {
-			throw new NoteException(HttpStatus.INTERNAL_SERVER_ERROR,environment.getProperty("500"));
-		}
-		return note;
+			return note;
+		} 
+		
 
-	}
+	
 	@Override
 	public NoteInformation removeRemainder(Long noteId, String token) {
 
@@ -252,8 +291,9 @@ NoteInformation note=new NoteInformation();
 				NoteInformation noteData = noteList.stream().filter(t -> t.getNoteId() == noteId).findFirst()
 						.orElseThrow(()->new NoteException(HttpStatus.BAD_REQUEST,environment.getProperty("400")));
 				noteData.setReminder(null);
-				return userNoteRepository.save(noteData);
-
+				NoteInformation note= userNoteRepository.save(noteData);
+				userServiceSearch.upDateNote(note);
+				return note;
 			}
 		} catch (Exception ae) {
 			throw new NoteException(HttpStatus.INTERNAL_SERVER_ERROR,environment.getProperty("500"));
@@ -347,19 +387,45 @@ NoteInformation note=new NoteInformation();
 	@Transactional
 	@Override
 	public List<NoteInformation> getAlltrashednotes(String token) {
-
-		long userid = (Long) generate.parseJWT(token);
-		UserInformation userData = userDao.findUserById(userid);
-				
 		try {
-			return userNoteRepository.restoreNote(userid);
-
-		} catch (Exception e) {
-			throw new NoteException(HttpStatus.INTERNAL_SERVER_ERROR, "Note Record Not Trashed due to Internal Error");
+		long userid =  generate.parseJWT(token);
+		UserInformation userData = userDao.findUserById(userid);		
+		if(userData!=null)
+		{
+			return  userNoteRepository.restoreNote(userid);
+		}	
+		else
+		{
+			throw new NoteException(HttpStatus.BAD_REQUEST,environment.getProperty("400"));
 		}
+	} catch (Exception e) {
+		throw new NoteException(HttpStatus.INTERNAL_SERVER_ERROR,environment.getProperty("500"));
 	}
-	
+
+	}
+
+	@Override
+	public NoteInformation unpinned(Long noteId, String token) {
+		Long id=generate.parseJWT(token);
+		List<NoteInformation> noteList = userNoteRepository.findNoteByUserId(id);
+		try {
+			if (noteList!= null) {
+				NoteInformation data =noteList.stream().filter(note->note.getNoteId()==noteId).findFirst().orElseThrow(()->new NoteException(HttpStatus.BAD_REQUEST,"Note not exist on the user"));
+				data.setIsPinned(1);
+//				data.setIsArchieved(0);
+				data.setUpDateTime(LocalDateTime.now());
+				return userNoteRepository.save(data);
+			}
+		} catch (Exception ae) {
+			throw new NoteException(HttpStatus.INTERNAL_SERVER_ERROR,"Note Record Not Pinned due to Internal Error");
+		}
+		return note;
 }
 
-
+	/*
+	 * This method should be used to save a new reminder.Call the corresponding
+	 * method of Respository interface.
+	 */
+	
+}
 

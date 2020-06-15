@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoonotes.exception.UserException;
@@ -21,6 +22,7 @@ import com.bridgelabz.fundoonotes.repository.UserDao;
 import com.bridgelabz.fundoonotes.repository.UserNoteRepository;
 import com.bridgelabz.fundoonotes.service.ServiceCollaborator;
 import com.bridgelabz.fundoonotes.util.JwtGenerator;
+import com.bridgelabz.fundoonotes.util.MailServiceProvider;
 
 /**
  * @author shaik shaiksha vali
@@ -37,6 +39,9 @@ public class serviceCollaboratorImplementation implements ServiceCollaborator{
 	private UserNoteRepository userNoteRepository;
 	@Autowired
 	private Environment environment;
+	@Autowired
+	private JavaMailSenderImpl mailSenderImplementation;
+	
 	@Transactional
 	@Override
 	public Optional<NoteInformation> addCollaborator(Long noteId, String email, String token) {
@@ -58,8 +63,12 @@ public class serviceCollaboratorImplementation implements ServiceCollaborator{
 				noteInformation.ifPresent(notes->
 					{
 					collaborator.getCollaboratorNote().add(notes);
+					
 					}
 				);
+				
+//				MailServiceProvider.sendMail(noteInformation,mailSenderImplementation,token);
+				
 				return noteInformation;
 			}
 			else

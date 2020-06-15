@@ -86,6 +86,8 @@ public interface LabelService {
 
 	String removeLable(Long noteId, String token, Long labelId);
 
+	List<NoteInformation> getnotesfromlabel(String token, Long labelid);
+
 
 	
 	

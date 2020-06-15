@@ -48,8 +48,14 @@ public class LabelInformation {
 	
 	
 	
-	@ManyToMany(mappedBy="labelList",fetch=FetchType.EAGER,cascade=CascadeType.PERSIST)
+	@ManyToMany(mappedBy="labelList",fetch=FetchType.EAGER,cascade=CascadeType.MERGE)
 	@JsonIgnore
 	private List<NoteInformation> noteList;
+	public List<NoteInformation> getNoteList() {
+		return noteList;
+	}
+	public void setNoteList(List<NoteInformation> noteList) {
+		this.noteList = noteList;
+	}
 	
 }
