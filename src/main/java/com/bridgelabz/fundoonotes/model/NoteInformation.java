@@ -24,10 +24,7 @@ import lombok.ToString;
  *
  */
 @Entity
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
+
 public class NoteInformation {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

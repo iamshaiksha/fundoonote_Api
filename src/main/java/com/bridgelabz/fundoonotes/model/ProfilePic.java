@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 @Entity
-@Data
 /* Entity Class for profilePic */
 public class ProfilePic {
 	@Id
