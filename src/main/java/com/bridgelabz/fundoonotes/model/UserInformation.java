@@ -1,4 +1,5 @@
 package com.bridgelabz.fundoonotes.model;
+
 import java.net.URL;
 /**
  * @author shaik shaiksha vali
@@ -14,24 +15,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.validator.constraints.UniqueElements;
-import org.springframework.data.elasticsearch.annotations.Document;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 @Entity
 
-@Table(name = "UserInformation")
 public class UserInformation {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,14 +58,14 @@ public class UserInformation {
 		this.profile = fileName;
 	}
 
-	@OneToMany(targetEntity =NoteInformation.class)
-	@JoinColumn(name="userId")
+	@OneToMany(targetEntity = NoteInformation.class)
+	@JoinColumn(name = "userId")
 	private List<NoteInformation> note;
-	
+
 	@OneToMany(targetEntity = LabelInformation.class)
-	@JoinColumn(name="userId")
+	@JoinColumn(name = "userId")
 	private List<LabelInformation> lables;
-	
+
 	@ManyToMany
 	private List<NoteInformation> collaboratorNote;
 
@@ -167,9 +156,5 @@ public class UserInformation {
 	public void setFileType(String fileType) {
 		this.fileType = fileType;
 	}
-
-
-	
-
 
 }
