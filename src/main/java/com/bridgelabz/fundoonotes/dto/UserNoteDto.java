@@ -1,15 +1,7 @@
 package com.bridgelabz.fundoonotes.dto;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
 /*Dto class for User note data*/
 public class UserNoteDto {
 	private String title;
